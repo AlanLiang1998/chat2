@@ -9,13 +9,13 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ChatClient extends Frame {
-    TextField tf = new TextField();
-    TextArea ta = new TextArea();
-    Socket s = null;
-    DataOutputStream dos = null;
-    DataInputStream dis = null;
+    private TextField tf = new TextField();
+    private TextArea ta = new TextArea();
+    private Socket s = null;
+    private DataOutputStream dos = null;
+    private DataInputStream dis = null;
 
-    public void launchFrame() throws IOException {
+    private void launchFrame() {
         setTitle("chat");
         setLocation(100, 100);
         setSize(600, 400);
@@ -38,12 +38,11 @@ public class ChatClient extends Frame {
 
         public void actionPerformed(ActionEvent e) {
             String str = tf.getText();
-            //ta.setText(str);
             tf.setText("");
             try {
                 dos.writeUTF(str);
             } catch (IOException e1) {
-                e1.printStackTrace();
+                System.out.println("写出错误！");
             }
         }
     }
@@ -56,21 +55,25 @@ public class ChatClient extends Frame {
                     String str = dis.readUTF();
                     ta.setText(ta.getText() + str + "\n");
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("读入错误！");
                 }
 
             }
         }
     }
 
-    public void connect() throws IOException {
-        s = new Socket("192.168.203.1", 8888);
-        System.out.println("connected");
-        dos = new DataOutputStream(s.getOutputStream());
-        dis = new DataInputStream(s.getInputStream());
+    private void connect() {
+        try {
+            s = new Socket("192.168.203.1", 8888);
+            dos = new DataOutputStream(s.getOutputStream());
+            dis = new DataInputStream(s.getInputStream());
+        } catch (IOException e) {
+            System.out.println("连接失败！");
+        }
+        System.out.println("连接上服务器了！");
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         new ChatClient().launchFrame();
     }
 }
