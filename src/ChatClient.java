@@ -11,6 +11,8 @@ import java.net.Socket;
 public class ChatClient extends Frame {
     TextField tf = new TextField();
     TextArea ta = new TextArea();
+    Socket s = null;
+    DataOutputStream dos = null;
 
     public void launchFrame() throws IOException {
         setTitle("chat");
@@ -36,14 +38,21 @@ public class ChatClient extends Frame {
             String str = tf.getText();
             ta.setText(str);
             tf.setText("");
+            try {
+                dos.writeUTF(str);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
+
     public void connect() throws IOException {
-        Socket s = new Socket("192.168.203.1", 8888);
+        s = new Socket("192.168.203.1", 8888);
         System.out.println("connected");
-        DataOutputStream dos=new DataOutputStream(s.getOutputStream());
-        dos.writeUTF("Hello!");
+        dos = new DataOutputStream(s.getOutputStream());
+
     }
+
     public static void main(String[] args) throws IOException {
         new ChatClient().launchFrame();
     }
