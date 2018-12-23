@@ -13,6 +13,7 @@ public class ChatClient extends Frame {
     TextArea ta = new TextArea();
     Socket s = null;
     DataOutputStream dos = null;
+    DataInputStream dis = null;
 
     public void launchFrame() throws IOException {
         setTitle("chat");
@@ -30,13 +31,14 @@ public class ChatClient extends Frame {
         tf.addActionListener(new TFListener());
         setVisible(true);
         connect();
+        new Thread(new RecevieThread()).start();
     }
 
     private class TFListener implements ActionListener {
 
         public void actionPerformed(ActionEvent e) {
             String str = tf.getText();
-            ta.setText(str);
+            //ta.setText(str);
             tf.setText("");
             try {
                 dos.writeUTF(str);
@@ -46,11 +48,26 @@ public class ChatClient extends Frame {
         }
     }
 
+    private class RecevieThread implements Runnable {
+
+        public void run() {
+            while (true) {
+                try {
+                    String str = dis.readUTF();
+                    ta.setText(ta.getText() + str + "\n");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+    }
+
     public void connect() throws IOException {
         s = new Socket("192.168.203.1", 8888);
         System.out.println("connected");
         dos = new DataOutputStream(s.getOutputStream());
-
+        dis = new DataInputStream(s.getInputStream());
     }
 
     public static void main(String[] args) throws IOException {
