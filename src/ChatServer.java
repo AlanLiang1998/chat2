@@ -10,8 +10,9 @@ import java.util.List;
 public class ChatServer {
     private ServerSocket ss = null;
     private List<Client> clients = new ArrayList<>();
+    List<String> uernames = new ArrayList<>();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         new ChatServer().start();
     }
 
@@ -19,13 +20,16 @@ public class ChatServer {
         try {
             ss = new ServerSocket(8888);
         } catch (IOException e) {
-            System.out.println("建立连接失败！");
+            System.out.println("连接建立失败！");
         }
         while (true) {
             Socket s = null;
             try {
                 s = ss.accept();
                 Client c = new Client(s);
+                /*String str = c.dis.readUTF();
+                if (judgeUsername(str))
+                    c.setUername(str);*/
                 clients.add(c);
                 new Thread(c).start();
             } catch (IOException e) {
@@ -35,7 +39,17 @@ public class ChatServer {
         }
     }
 
+   /* public boolean judgeUsername(String str) {
+        for (int i = 0; i < uernames.size(); i++) {
+            String uername = uernames.get(i);
+            if (str.equals(uername))
+                return false;
+        }
+        return true;
+    }*/
+
     private class Client implements Runnable {
+        //String uername = null;
         Socket s = null;
         DataInputStream dis = null;
         DataOutputStream dos = null;
@@ -49,8 +63,16 @@ public class ChatServer {
                 System.out.println("流错误！");
             }
         }
+/*
+        public String getUername() {
+            return uername;
+        }
 
-        public void sendAll(String str){
+        public void setUername(String uername) {
+            this.uername = uername;
+        }*/
+
+        public void sendAll(String str) {
             for (int i = 0; i < clients.size(); i++) {
                 Client c = clients.get(i);
                 try {
@@ -77,4 +99,5 @@ public class ChatServer {
             }
         }
     }
+
 }
